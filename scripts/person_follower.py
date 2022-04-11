@@ -23,7 +23,7 @@ class person_follower(object):
         ang = Vector3()
         self.twist = Twist(linear=lin,angular=ang)
 
-        self.min_dist = 0.5
+        self.min_dist = 1
     
     def scan(self, data):
 

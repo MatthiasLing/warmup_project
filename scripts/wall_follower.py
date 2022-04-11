@@ -1,4 +1,3 @@
-
 #!/usr/bin/env python3
 
 from re import M
@@ -26,53 +25,71 @@ class wall_follower(object):
         ang = Vector3()
         self.twist = Twist(linear=lin,angular=ang)
 
-        self.min_distance = 0.5
+        self.min_dist = 1.5
+    
+    def drive(self):
+        rospy.spin()
     
     def scan(self, data):
 
         min_dist = min(data.ranges)
+        linear = self.twist.linear.x
+        angular = self.twist.angular.z
 
         # nothing nearby
         if min_dist == 0:
+            print("case 0: moving forward ")
             self.twist.linear.x = 0.1
             self.twist.angular.z = 0
         
         # too far from wall
         elif min_dist > self.min_dist:
-            
-            # if right in front, move towards it 
-            if min_dist == data.ranges[0]:
-                self.twist.linear.x = 0.1
-                self.twist.angular.z = 0
-                self.publisher.publish(self.twist)
-                # rospy.sleep((min_dist - self.min_dist)/0.1)
-            # turn towards it 
-            else:
-                angle = data.ranges.index(min_dist)
-                self.twist.linear.x = 0
-
-                if angle > 180:
-                    self.twist.angular.z = -0.1
-                else:
-                    self.twist.angular.z = 0.1
-
-                self.publisher.publish(self.twist)
-                # rospy.sleep((min_dist - self.min_dist)/0.1)
+            print("case 1: too far from wall, moving forward")
+            self.twist.linear.x = 0.1
+     
 
         # too close to wall
         elif min_dist < self.min_dist:
+            print("case 2: too close")
             angle = data.ranges.index(min_dist)
-
-            if angle >= 270:
-                self.twist.angular.z = 0.1
+            print(angle)
+            if angle == 0:
+                print("2.0")
+                linear = 0
+                angular = 0.1
+            elif angle > 180:
+                print("2.1")
+                linear = 0.05
+                angular = 0.1
+            elif angle < 90:
+                print("2.2")
+                angular = -0.1
+                linear = 0
             else:
-                self.twist.linear.x = 0.1
-                
+                print("2.3")
+                angular = 0.1
+                linear = 0
 
         else: #just right distance from wall
-            self.twist.angular.z = 0
-            self.twist.linear.x = 0.1
-            self.publisher.publish(self.twist)
+
+            angle = data.ranges.index(min_dist)
+            print("case 3: right ")
+            if angle == 270:
+                print("3.0")
+                linear = 0.1
+                angular = 0
+            elif angle < 270:
+                print("3.1")
+                self.twist.angular.z = -0.1
+                # self.twist.linear.x = 0.05
+            else:
+                print("3.2")
+                self.twist.angular.z = 0.1
+                # self.twist.linear.x = 0
+
+        self.twist.linear.x = linear
+        self.twist.angular.z = angular
+        self.publisher.publish(self.twist)
         
     
     def reset(self):
@@ -90,19 +107,6 @@ class wall_follower(object):
         print("speed reset")
 
 
-    def rotate(self):
-        print("rotating")
-        move = Twist()
-
-        move.linear.x = 0.0
-        move.linear.y = 0.0
-        move.angular.z = (pi/2)/rest
-
-        self.publisher.publish(move)
-        rospy.sleep(rest)
-
-        move.angular.z = 0
-        self.publisher.publish(move)
 
 if __name__ == '__main__':
     node = wall_follower()
