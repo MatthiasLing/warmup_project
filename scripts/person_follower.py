@@ -23,16 +23,17 @@ class person_follower(object):
         ang = Vector3()
         self.twist = Twist(linear=lin,angular=ang)
 
-        self.min_dist = 1
+        self.min_dist = 0.5
     
     def scan(self, data):
 
         min_dist = min(data.ranges)
+        print(min_dist)
         if min_dist <= self.min_dist:
             self.twist.linear.x = 0
             self.twist.angular.z = 0
         else:
-            self.twist.linear.x = 0.1
+            self.twist.linear.x = 0.3
 
             if min_dist == data.ranges[0]:
                 self.twist.angular.z = 0
@@ -44,22 +45,6 @@ class person_follower(object):
 
         self.publisher.publish(self.twist)
 
-        
-        
-    
-    def reset(self):
-        m = Twist()
-
-
-        m.linear.x = 0.0
-        m.linear.y = 0.0
-        m.linear.z = 0.0
-        m.angular.x = 0.0
-        m.angular.y = 0.0
-        m.angular.z = 0.0
-        self.publisher.publish(m)
-        # rospy.sleep(2)
-        print("speed reset")
 
     def drive(self):
         rospy.spin()
