@@ -8,7 +8,7 @@ from geometry_msgs.msg import Vector3
 
 from math import pi
 
-# number of seconds that the robot spins for
+# rest seconds - arbitrary value
 rest = 5
 
 
@@ -24,6 +24,7 @@ class drive_square(object):
         ang = Vector3()
         self.msg = Twist(linear=lin,angular=ang)
 
+    # Function that is called to initiate movement
     def drive(self):
         
         node.reset()
@@ -31,7 +32,9 @@ class drive_square(object):
             rospy.sleep(1)
             node.run()
             node.rotate()
+        node.reset()
  
+    # Causes robot to move in a straight line for rest/1.5 seconds
     def run(self):
  
         self.msg.linear.x = 0.3
@@ -41,8 +44,9 @@ class drive_square(object):
         self.msg.angular.z = 0
         
         self.publisher.publish(self.msg)
-        rospy.sleep(rest)
+        rospy.sleep(rest/1.5)
 
+    # Stops all movement
     def reset(self):
 
         self.msg.linear.x = 0.0
@@ -53,14 +57,17 @@ class drive_square(object):
         self.msg.angular.z = 0.0
         self.publisher.publish(self.msg)
 
-
+    # Function for the 90 degree turns
     def rotate(self):
 
+        # Stops linear motion, sets angular velocity
         self.msg.linear.x = 0.0
         self.msg.angular.z = (pi/2)/rest
 
         self.publisher.publish(self.msg)
-        rospy.sleep(rest)
+
+        # Subtract a little from the rest to prevent over-turning 
+        rospy.sleep(rest-0.5)
 
 if __name__ == '__main__':
     node = drive_square()

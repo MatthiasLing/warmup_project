@@ -44,6 +44,7 @@ class wall_follower(object):
         # md is the measured distance to the nearest wall
         # angle is the robot's angle to that nearest wall
         md = min(data.ranges)
+        print(md)
         angle = data.ranges.index(md)
         
         # linear and angular are the speed components that I'll modify
