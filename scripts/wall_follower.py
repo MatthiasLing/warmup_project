@@ -26,6 +26,8 @@ z = 0.2
 # A constant value for calculating what to modify velocity to 
 kp = 0.05
 
+# normalizes an angle around 270 - 270->90 becomes 0->180
+# 270->90 becomes 0->-180
 def normalize_270(angle):
     if angle in range(90,270): 
         angle = angle - 270
@@ -85,8 +87,10 @@ class wall_follower(object):
         # If the robot is too far from the wall, move conditionally towards it 
         else:        
             
+            #normalize around 0 -> turns angles to the left of the origin to negative values.
             if angle > 180: 
                 angle -= 360
+            # if the robot doesn't have its back to the person, move forward.
             if angle in range(-90,90):
                 linear = x
 
