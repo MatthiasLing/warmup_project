@@ -11,7 +11,7 @@ The drive function just ran the loop.  Besides that, I had two functions: run (f
 
 ## Person Follower
 ### Description
-My person follower just sets a standard linear speed unless it's too close to the person.  It then also sets an angular speed depending on which side (left or right) of the robot the person is standing on.
+My person follower just sets a standard linear speed unless it's too close to the person.  It then also sets an angular speed depending on which side (left or right) of the robot the person is standing on.  The drive function iterates on these two functions 4 times.
 ### Code explanation
 I had the overall drive function again, as well as a scan function.  This scan function would just check if the person was within the minimum threshold.  If they were, it would negate linear.x.  If not, it would set it to a predetermined value and would calculate which side of the robot the person was on (looking at data.ranges).  It would adjust the angular velocity to positive or negative depending on the side.  Thus, the robot is constantly adjusting.  If the person's behind the robot (angle in range(90,270)), it'll only turn and not move forward.  I conclude the function by publishing the twist.
 ### Gif
@@ -21,7 +21,7 @@ I had the overall drive function again, as well as a scan function.  This scan f
 ### Description
 I used the approach of finding the wall first and then navigating from there.  Similarly to person_follower, I would adjust the rotational velocity and move forward constantly until the nearest wall was the minimum distance from the robot.  Then, I would direct the bot to turn proportionally depending on the difference from the angle of the closest point and 90 degrees.  This would allow it to stay a constant distance from the wall.
 ### Code explanation
-All the maneuvering is done in the scan function.  First, I navigate to the wall if the robot is too far away.  Otherwise, I normalize the angle of the nearest point to 270 degrees (270->90 degrees is 0->180 degrees and the rest is 0->-180 degrees).  This makes it easy to enact proportional control for the robot's angular velocity.  I define a standard kp value, and multiply kp*(normalized angle) / (some arbitrary constant).  I conclude the function by publishing.
+All the maneuvering is done in the scan function.  First, I navigate to the wall if the robot is too far away.  Otherwise, I normalize the angle of the nearest point to 270 degrees in the normalize_270 function (270->90 degrees is 0->180 degrees and the rest is 0->-180 degrees).  This makes it easy to enact proportional control for the robot's angular velocity.  If the angle is positive, the robot turns left.  Otherwise it's right.  I define a standard kp value, and multiply kp*(normalized angle) / (some arbitrary constant).  I conclude the function by publishing.
 ### Gif
 ![](wall_follower.gif)
 
